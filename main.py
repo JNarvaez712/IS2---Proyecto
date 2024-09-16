@@ -13,10 +13,10 @@ def responder_consulta(consulta, contexto=""):
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "Eres un asistente útil."},
             {"role": "user", "content": f"{contexto}\n\n{consulta}"}
         ],
-        max_tokens=5000
+        max_tokens=1000
     )
     respuesta = response.choices[0].message['content'].strip()
     return respuesta.replace('. ', '.\n')
@@ -70,10 +70,9 @@ st.sidebar.subheader("Chats Anteriores")
 for i, chat in enumerate(st.session_state.previous_chats):
     with st.sidebar.expander(f"Chat {i + 1}"):
         for message in chat:
-            if message["role"] == "user":
-                st.write(f"**Usuario:** {message['content']}")
-            else:
-                st.write(f"**Asistente:** {message['content']}")
+            st.write(message['content'])
+        if st.button(f"Cargar Chat {i + 1}", key=f"load_{i}"):
+            st.session_state.chat_history = chat
         if st.button(f"Eliminar Chat {i + 1}", key=f"delete_{i}"):
             st.session_state.previous_chats.pop(i)
             guardar_historial(st.session_state.previous_chats)
@@ -98,26 +97,15 @@ if uploaded_file:
 if submit_button:
     respuesta = responder_consulta(consulta, contexto)
     st.session_state.chat_history.append({"role": "user", "content": consulta})
-    st.session_state.chat_history.append({"role": "system", "content": respuesta})
+    st.session_state.chat_history.append({"role": "assistant", "content": respuesta})
 
 # Mostrar el historial de chat en orden inverso
 st.subheader("Historial de Chat")
-# Agrupar mensajes en pares de usuario y asistente
-paired_messages = []
-i = 0
-while i < len(st.session_state.chat_history):
-    user_message = st.session_state.chat_history[i]
-    assistant_message = st.session_state.chat_history[i + 1] if i + 1 < len(st.session_state.chat_history) else None
-    paired_messages.append((user_message, assistant_message))
-    i += 2
-
-# Mostrar los pares en orden inverso
-for user_message, assistant_message in reversed(paired_messages):
-    if user_message:
-        st.write(f"**Usuario:** {user_message['content']}")
-    if assistant_message:
-        st.write(f"**Asistente:** {assistant_message['content']}")
-    st.markdown("<hr>", unsafe_allow_html=True)
+# Mostrar solo las respuestas en orden inverso
+for message in reversed(st.session_state.chat_history):
+    if message["role"] == "assistant":
+        st.write(message['content'])
+        st.markdown("<hr>", unsafe_allow_html=True)
 
 # Guardar el historial actual al archivo JSON
 guardar_historial(st.session_state.previous_chats)
