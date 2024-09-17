@@ -50,7 +50,7 @@ def extraer_texto_docx(file):
     return texto
 
 # Crear la interfaz gráfica con Streamlit
-st.title("Consulta Chat")
+st.title("Sistema de Gestión de Respuestas (RAG)")
 
 # Inicializar el historial de chat y los chats anteriores
 if 'chat_history' not in st.session_state:
