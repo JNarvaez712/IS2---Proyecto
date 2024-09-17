@@ -91,11 +91,11 @@ if uploaded_file:
         texto_documento = uploaded_file.read().decode("utf-8")
     elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         texto_documento = extraer_texto_docx(uploaded_file)
-    contexto = f"Texto del documento:\n{texto_documento}"
+    contexto = f"Texto del documento cargado."
     st.session_state.chat_history.append({"role": "system", "content": contexto})
 
 if submit_button:
-    respuesta = responder_consulta(consulta, contexto)
+    respuesta = responder_consulta(consulta, texto_documento)
     st.session_state.chat_history.append({"role": "user", "content": consulta})
     st.session_state.chat_history.append({"role": "assistant", "content": respuesta})
 
@@ -109,7 +109,6 @@ for message in reversed(st.session_state.chat_history):
 
 # Guardar el historial actual al archivo JSON
 guardar_historial(st.session_state.previous_chats)
-
 
 
 
