@@ -103,11 +103,9 @@ for i, chat in enumerate(st.session_state.previous_chats):
             st.write(message['content'])
         if st.button(f"Cargar Chat {i + 1}", key=f"load_{i}"):
             st.session_state.chat_history = chat
-            st.experimental_rerun()
         if st.button(f"Eliminar Chat {i + 1}", key=f"delete_{i}"):
             st.session_state.previous_chats.pop(i)
             guardar_historial(st.session_state.previous_chats)
-            st.experimental_rerun()
 
 # Formulario para la consulta y subida de documentos
 with st.form(key='consulta_form'):
