@@ -63,15 +63,15 @@ def responder_consulta(consulta, contexto=""):
 
 # Función para guardar el historial de chat en un archivo JSON
 def guardar_historial(historial):
-    with open("chat_history.json", "w") as file:
+    with open("../chat_history.json", "w") as file:
         json.dump(historial, file)
 
 
 
 # Función para cargar el historial de chat desde un archivo JSON
 def cargar_historial():
-    if os.path.exists("chat_history.json"):
-        with open("chat_history.json", "r") as file:
+    if os.path.exists("../chat_history.json"):
+        with open("../chat_history.json", "r") as file:
             return json.load(file)
     return []
 
@@ -137,6 +137,7 @@ with st.form(key='consulta_form'):
 
 contexto = ""
 texto_documento = ""
+tipo_documento = ""
 if uploaded_file:
     if uploaded_file.type == "application/pdf":
         texto_documento = extraer_texto_pdf(uploaded_file)
