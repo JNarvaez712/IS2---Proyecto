@@ -1,6 +1,6 @@
 import openai
 import os
-from dotenv import load_dotenv
+
 import streamlit as st
 import json
 from PyPDF2 import PdfReader
@@ -10,8 +10,6 @@ from chromadb.config import Settings
 from pymongo import MongoClient
 from datetime import datetime
 
-# Cargar las variables de entorno
-load_dotenv()
 
 
 # Configurar MongoDB
@@ -152,9 +150,7 @@ if uploaded_file:
     # Crear metadatos del documento
     metadatos = {
         "titulo": uploaded_file.name,
-        "autor": "Desconocido",  # Aquí puedes extraer o añadir información sobre el autor
         "fecha_creacion": datetime.utcnow(),
-        "categoria": "General",  # Puedes personalizar según la categoría del documento
         "tipo_documento": tipo_documento
     }
 
