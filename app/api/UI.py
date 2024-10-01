@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import streamlit as st
 
 from app.usecases import *
@@ -5,6 +7,7 @@ from app.usecases import *
 from app.adapters.mongodb_adapter import MongoDBAdapter
 from app.adapters.chromadb_adapter import ChromaDBAdapter
 from app.api.dependencies import *
+from app.core.ports import *
 
 
 # Configurar la API de OpenAI
@@ -38,6 +41,18 @@ for i, chat in enumerate(st.session_state.previous_chats):
             st.session_state.previous_chats.pop(i)
             guardar_historial(st.session_state.previous_chats)
 
+# FUnción para mapear procesadores según el tipo de archivo
+def obtener_procesador(uploaded_file):
+    mime_type = uploaded_file.type
+    procesadores = {
+        "application/pdf": PDFProcessor(),
+        "text/plain": TXTProcessor(),
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": DOCXProcessor()
+    }
+    return procesadores.get(mime_type, None)
+
+
+
 # Formulario para la consulta y subida de documentos
 with st.form(key='consulta_form'):
     consulta = st.text_input("Ingrese su consulta:")
@@ -60,22 +75,18 @@ chroma_adapter = ChromaDBAdapter(chroma_client)
 
 
 if uploaded_file:
-    if uploaded_file.type == "application/pdf":
-        texto_documento = extraer_texto_pdf(uploaded_file)
-        tipo_documento = "PDF"
-    elif uploaded_file.type == "text/plain":
-        texto_documento = uploaded_file.read().decode("utf-8")
-        tipo_documento = "TXT"
-    elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        texto_documento = extraer_texto_docx(uploaded_file)
-        tipo_documento = "DOCX"
+    procesador = obtener_procesador(uploaded_file)
+
+    if procesador:
+        # Extraer el texto y el tipo de archivo
+        texto_documento = procesador.extract_text(uploaded_file)
+        tipo_documento = procesador.get_file_type()
+
 
     # Crear metadatos del documento
     metadatos = {
         "titulo": uploaded_file.name,
-        "autor": "Desconocido",  # Aquí puedes extraer o añadir información sobre el autor
         "fecha_creacion": datetime.utcnow(),
-        "categoria": "General",  # Puedes personalizar según la categoría del documento
         "tipo_documento": tipo_documento
     }
 
@@ -85,23 +96,11 @@ if uploaded_file:
     # Dividir el texto en chunks
     chunks = dividir_texto_en_chunks(texto_documento)
 
-
-
-    # Inicializar clientes de base de datos
-    mongo_client = get_mongo_client()  # Cliente de MongoDB
-    chroma_client = get_chroma_client()  # Cliente de ChromaDB
-
-    # Crear instancias de los adaptadores
-    mongo_adapter = MongoDBAdapter(mongo_client)
-    chroma_adapter = ChromaDBAdapter(chroma_client)
-
     # Almacenar chunks en ChromaDB
     chroma_adapter.almacenar_chunks(chunks)
 
     # Almacenar chunks y metadatos en MongoDB
     mongo_adapter.almacenar_chunks(idDocumento, chunks, metadatos)
-
-
 
 
     # Agregar el contexto al historial de chat
