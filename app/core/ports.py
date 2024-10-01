@@ -4,7 +4,7 @@ import docx
 from PyPDF2 import PdfReader
 
 
-class AlmacenamientoChunks(ABC):
+class DatabasePort(ABC):
     @abstractmethod
     def almacenar_chunks(self, id_documento, chunks, metadatos):
         pass
