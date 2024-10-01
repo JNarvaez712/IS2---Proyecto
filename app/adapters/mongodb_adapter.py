@@ -1,3 +1,4 @@
+# mongodb_adapter.py
 from datetime import datetime
 from app.core.ports import DatabasePort
 from app.api.dependencies import get_mongo_client
@@ -10,11 +11,11 @@ class MongoDBAdapter(DatabasePort):
         self.coleccionUsuarios = self.db["Usuario"]
 
     # Función para almacenar los chunks en MongoDB
-    def almacenar_chunks(self, idDocumento, chunks, metadatos):
+    def almacenar_chunks(self, id_documento, chunks, metadatos):
         for i, chunk in enumerate(chunks):
             documento = {
                 "chunk_id": i,
-                "idDocumento": idDocumento,
+                "id_documento": id_documento,
                 "texto": chunk,
                 "metadatos": metadatos,
                 "fecha_subida": datetime.utcnow(),
@@ -59,4 +60,3 @@ class MongoDBAdapter(DatabasePort):
             return f"Rol de {username} actualizado a {nuevo_rol}"
         else:
             return "Usuario no encontrado"
-
