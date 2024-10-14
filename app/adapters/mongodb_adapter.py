@@ -1,12 +1,11 @@
 # mongodb_adapter.py
 from datetime import datetime
 from app.core.ports import AlmacenamientoChunks
-from app.api.dependencies import get_mongo_client
 import bcrypt
 
 class MongoDBAdapter(AlmacenamientoChunks):
-    def __init__(self, mongoClient: get_mongo_client()):
-        self.db = mongoClient["RAGSystem"]
+    def __init__(self, mongo_client):
+        self.db = mongo_client["RAGSystem"]
         self.coleccionDocumentos = self.db["Documento"]
         self.coleccionUsuarios = self.db["Usuario"]
 
@@ -60,3 +59,4 @@ class MongoDBAdapter(AlmacenamientoChunks):
             return f"Rol de {username} actualizado a {nuevo_rol}"
         else:
             return "Usuario no encontrado"
+
