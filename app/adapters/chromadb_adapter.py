@@ -11,3 +11,4 @@ class ChromaDBAdapter(AlmacenamientoChunks):
                 documents=[chunk],
                 metadatas=[{"chunk_id": i}]
             )
+

@@ -7,6 +7,7 @@ class AlmacenamientoChunks(ABC):
     def almacenar_chunks(self, id_documento, chunks, metadatos):
         pass
 
+class GestionUsuarios(ABC):
     @abstractmethod
     def registrar_usuario(self, username, password, role="Usuario"):
         pass
