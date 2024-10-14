@@ -2,8 +2,6 @@ import os
 import openai
 
 import json
-from PyPDF2 import PdfReader
-import docx
 from app.api.dependencies import configure_openai
 
 # Inicializar dependencias
@@ -16,7 +14,7 @@ def responder_consulta(consulta, contexto):
     print(f"Consulta: {consulta}")
 
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "Eres un asistente útil."},
             {"role": "user", "content": f"{contexto}\n\n{consulta}"}

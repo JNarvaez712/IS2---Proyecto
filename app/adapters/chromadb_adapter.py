@@ -4,10 +4,10 @@ class ChromaDBAdapter(AlmacenamientoChunks):
     def __init__(self, chroma_client):
         self.collection = chroma_client.get_or_create_collection("document_chunks")
 
-    def almacenar_chunks(self, chunks):
+    def almacenar_chunks(self, idDocumento, chunks):
         for i, chunk in enumerate(chunks):
             self.collection.add(
-                ids=[f"chunk_{i}"],
+                ids=[f"chunk_{idDocumento}_{i}"],
                 documents=[chunk],
-                metadatas=[{"chunk_id": i}]
+                metadatas=[{"chunk_id": i, "idDocumento":idDocumento}]
             )

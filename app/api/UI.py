@@ -97,7 +97,7 @@ if uploaded_file:
     chunks = dividir_texto_en_chunks(texto_documento)
 
     # Almacenar chunks en ChromaDB
-    chroma_adapter.almacenar_chunks(chunks)
+    chroma_adapter.almacenar_chunks(idDocumento, chunks)
 
     # Almacenar chunks y metadatos en MongoDB
     mongo_adapter.almacenar_chunks(idDocumento, chunks, metadatos)

@@ -12,9 +12,11 @@ class MongoDBAdapter(AlmacenamientoChunks):
     def almacenar_chunks(self, idDocumento, chunks, metadatos):
 
          for i, chunk in enumerate(chunks):
+             chroma_id = f"chunk_{idDocumento}_{i}"
              documento = {
                  "chunk_id": i,
                  "idDocumento": idDocumento,
+                 "chroma_id": chroma_id,
                  "texto": chunk,
                  "metadatos": metadatos,
                  "fecha_subida": datetime.utcnow(),
