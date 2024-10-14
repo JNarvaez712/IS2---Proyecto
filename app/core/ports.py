@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import docx
 from PyPDF2 import PdfReader
 
-class DatabasePort(ABC):
+class AlmacenamientoChunks(ABC):
     @abstractmethod
     def almacenar_chunks(self, id_documento, chunks, metadatos):
         pass

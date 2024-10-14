@@ -1,4 +1,4 @@
-from core.usecases import PDFProcessor, TXTProcessor, DOCXProcessor
+from app.core.ports import PDFProcessor, TXTProcessor, DOCXProcessor
 
 class FileProcessorFactory:
     @staticmethod

@@ -1,10 +1,10 @@
 # mongodb_adapter.py
 from datetime import datetime
-from app.core.ports import DatabasePort
+from app.core.ports import AlmacenamientoChunks
 from app.api.dependencies import get_mongo_client
 import bcrypt
 
-class MongoDBAdapter(DatabasePort):
+class MongoDBAdapter(AlmacenamientoChunks):
     def __init__(self, mongoClient: get_mongo_client()):
         self.db = mongoClient["RAGSystem"]
         self.coleccionDocumentos = self.db["Documento"]
