@@ -1,5 +1,7 @@
 from datetime import datetime
 import streamlit as st
+import uuid
+
 from app.usecases import *
 from app.adapters.mongodb_adapter import MongoDBAdapter
 from app.adapters.chromadb_adapter import ChromaDBAdapter
@@ -38,7 +40,8 @@ def mostrar_login():
                 role = st.selectbox('Selecciona tu rol', ['Usuario', 'Administrador'])
 
         if boton_registro:
-            mensaje_registro = registrar_usuario(nuevo_usuario, nueva_contraseña)
+            user_id = str(uuid.uuid4())
+            mensaje_registro = registrar_usuario(nuevo_usuario, nueva_contraseña, user_id)
             st.success(mensaje_registro)
             st.session_state.show_register = False
 
@@ -62,10 +65,11 @@ def mostrar_login():
 
         if boton_login:
             # Intentar autenticar al usuario
-            role, mensaje_login = autenticar_usuario(usuario, contraseña)
+            role, mensaje_login, user_id = autenticar_usuario(usuario, contraseña)
             if role:
                 st.session_state.authenticated = True  # Cambiar el estado a autenticado
                 st.session_state.role = role  # Guardar el rol del usuario
+                st.session_state.user_id = user_id
                 st.success(mensaje_login)
             else:
                 st.error(mensaje_login)
@@ -73,6 +77,8 @@ def mostrar_login():
         if boton_registro:
             # Redirigir al formulario de registro
             st.session_state.show_register = True
+
+
 
 def mostrar_chat():
     # Interfaz gráfica principal del usuario autenticado
@@ -174,8 +180,8 @@ def mostrar_chat():
         # Almacenar chunks en ChromaDB
         chroma_adapter.almacenar_chunks(idDocumento, chunks, metadatos)
 
-        # Almacenar chunks y metadatos en MongoDB
-        mongo_adapter.almacenar_chunks(idDocumento, chunks, metadatos)
+        # relacionar documentos con usuarios en MongoDB
+        mongo_adapter.relacionar_documento_con_usuario(st.session_state.user_id, idDocumento, metadatos)
 
         # Agregar el contexto al historial de chat
         contexto = f"Texto del documento cargado: {uploaded_file.name}"
