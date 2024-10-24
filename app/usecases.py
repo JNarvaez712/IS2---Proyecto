@@ -1,6 +1,6 @@
 import os
-import openai
 
+import openai
 import json
 from app.api.dependencies import configure_openai
 
