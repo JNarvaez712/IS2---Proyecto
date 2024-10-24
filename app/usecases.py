@@ -1,9 +1,7 @@
 import os
-import openai
 import json
-from PyPDF2 import PdfReader
-import docx
-from app.api.dependencies import configure_openai, get_mongo_client  # Importar la función para obtener el cliente de MongoDB
+from app.api.dependencies import configure_openai, get_mongo_client
+from app.adapters.openAI_adapter import OpenAIConsultas
 from app.adapters.mongodb_adapter import MongoDBAdapter
 
 # Inicializar dependencias
@@ -17,20 +15,8 @@ mongo_adapter = MongoDBAdapter(mongo_client)
 
 # Función para responder a cualquier consulta usando OpenAI
 def responder_consulta(consulta, contexto):
-
-    print(f"Contexto: {contexto}")
-    print(f"Consulta: {consulta}")
-
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "Eres un asistente útil."},
-            {"role": "user", "content": f"{contexto}\n\n{consulta}"}
-        ],
-        max_tokens=1000
-    )
-    respuesta = response['choices'][0]['message']['content'].strip()
-    return respuesta.replace('. ', '.\n')
+    openai_consultas = OpenAIConsultas()
+    return openai_consultas.responder_consulta(consulta, contexto)
 
 # Función para guardar el historial de chat en un archivo JSON
 def guardar_historial(historial):
@@ -48,8 +34,10 @@ def cargar_historial():
 def dividir_texto_en_chunks(texto, tamano_chunk=500, solapamiento=50):
     chunks = []
     for i in range(0, len(texto), tamano_chunk - solapamiento):
-        chunks.append(texto[i:i + tamano_chunk])
+        chunk = texto[i:i + tamano_chunk]
+        chunks.append(chunk)
     return chunks
+
 
 # Funciones relacionadas con los usuarios utilizando el adaptador de MongoDB
 def registrar_usuario(username, password, role="Usuario"):
