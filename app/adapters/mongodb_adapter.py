@@ -28,14 +28,11 @@ class MongoDBAdapter:
         if self.coleccionUsuarios.find_one({"username": username}):
             return "El usuario ya existe"
 
-        #Generar un id
-        user_id = str(uuid.uuid4())
-
         # Hashear la contraseña
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         # Insertar el nuevo usuario en la colección
-        self.coleccionUsuarios.insert_one({"username": username, "password": hashed_password, "role": role, "user_id": user_id})
+        self.coleccionUsuarios.insert_one({"username": username, "password": hashed_password.decode("utf-8"), "role": role, "user_id": str(uuid.uuid4())})
         return "Usuario registrado exitosamente"
 
     # Función para autenticar un usuario
@@ -46,8 +43,8 @@ class MongoDBAdapter:
             return None, "Usuario no encontrado", None
 
         # Verificar la contraseña
-        if bcrypt.checkpw(password.encode('utf-8'), usuario["password"]):
-            return usuario['role'], "Inicio de sesión exitoso", usuario.get('user_id')  # Devuelve el rol y user_id
+        if bcrypt.checkpw(password.encode('utf-8'), usuario["password"].encode("utf-8")):
+            return usuario['role'], "Inicio de sesión exitoso", usuario["user_id"]  # Devuelve el rol y user_id
 
         else:
             return None, "Contraseña incorrecta", None
