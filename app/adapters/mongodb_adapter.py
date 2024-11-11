@@ -24,39 +24,36 @@ class MongoDBAdapter(AlmacenamientoChunks):
 
     # Función para registrar un nuevo usuario
     def registrar_usuario(self, username, password, role="Usuario"):
-        # Verificar si el usuario ya existe
         if self.coleccionUsuarios.find_one({"username": username}):
             return "El usuario ya existe"
-
-        # Hashear la contraseña
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-        # Insertar el nuevo usuario en la colección
         self.coleccionUsuarios.insert_one({"username": username, "password": hashed_password, "role": role})
         return "Usuario registrado exitosamente"
 
     # Función para autenticar un usuario
     def autenticar_usuario(self, username, password):
-        # Buscar el usuario en la colección
         usuario = self.coleccionUsuarios.find_one({"username": username})
         if not usuario:
             return None, "Usuario no encontrado"
-
-        # Verificar la contraseña
         if bcrypt.checkpw(password.encode('utf-8'), usuario["password"]):
-            role = usuario.get("role", "Usuario")  # Asignar rol predeterminado si no tiene uno
+            role = usuario.get("role", "Usuario")
             return role, "Autenticación exitosa"
         else:
             return None, "Contraseña incorrecta"
 
     # Función para actualizar el rol de un usuario
     def actualizar_rol_usuario(self, username, nuevo_rol):
-        # Verificar si el usuario existe
-        usuario_encontrado = self.coleccionUsuarios.find_one({"username": username})
-        if usuario_encontrado:
-            # Actualizar el rol del usuario
-            self.coleccionUsuarios.update_one({"username": username}, {"$set": {"role": nuevo_rol}})
-            return f"Rol de {username} actualizado a {nuevo_rol}"
-        else:
-            return "Usuario no encontrado"
+        result = self.coleccionUsuarios.update_one({"username": username}, {"$set": {"role": nuevo_rol}})
+        return result.modified_count > 0
+
+    # Función para eliminar un usuario (para limpieza en pruebas)
+    def eliminar_usuario(self, username):
+        result = self.coleccionUsuarios.delete_one({"username": username})
+        return result.deleted_count > 0
+
+    # Función para obtener un usuario por username
+    def obtener_usuario(self, username):
+        usuario = self.coleccionUsuarios.find_one({"username": username})
+        return usuario  # Retorna el documento del usuario o None si no existe
+
 
