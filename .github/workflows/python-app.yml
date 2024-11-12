@@ -26,6 +26,10 @@ jobs:
     - name: Run tests
       run: |
         poetry run pytest --cov=app --cov-report=xml
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
