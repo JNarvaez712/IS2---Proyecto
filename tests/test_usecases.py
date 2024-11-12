@@ -1,5 +1,3 @@
-import pytest
-import json
 from app.usecases import *
 
 
