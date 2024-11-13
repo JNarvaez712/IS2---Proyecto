@@ -1,16 +1,9 @@
-from locust import HttpUser, TaskSet, task, between
+from locust import HttpUser, task, between
 
-class ConversationBehavior(TaskSet):
-    @task
-    def initiate_conversation(self):
-        # Realiza una petición de inicio de conversación
-        self.client.post("/start", json={"user_id": "test_user"})
+class SimpleLoadTest(HttpUser):
+    wait_time = between(1, 5)
 
     @task
-    def send_message(self):
-        # Simula el envío de un mensaje al modelo
-        self.client.post("/message", json={"user_id": "test_user", "message": "Hello, how are you?"})
+    def test_main_endpoint(self):
+        self.client.get("/")  # Ruta principal de tu aplicación
 
-class LoadTestUser(HttpUser):
-    tasks = [ConversationBehavior]
-    wait_time = between(1, 5)  # Simula un tiempo de espera entre tareas para cada usuario simulado
